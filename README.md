@@ -1,13 +1,25 @@
 # timely-notify
 
-One-page website that connects to Google Calendar and shows event notifications.
+Minimal calendar notifier.
+
+## Overview
+
+A one-page website that connects to Google Calendar and shows event notifications. Important events (based on keywords) are highlighted separately.
 
 ## Structure
 
-- `frontend/` — HTML + JS site
-- `backend/` — Python FastAPI service to interact with Google Calendar
+- `frontend/` — HTML + JavaScript site
+- `backend/` — Python FastAPI service to interact with Google Calendar API
 
-## Deployment
+## How to Run Locally
 
-- Host frontend on Render as static site
-- Host backend on Render as Python web service
+### Backend
+
+From the `backend/` folder:
+
+```bash
+uvicorn main:app --reload
+
+## Frontend
+
+python -m http.server 5500

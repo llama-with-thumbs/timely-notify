@@ -1,14 +1,106 @@
 <!DOCTYPE html>
 <html>
-<head>
-  <meta charset="UTF-8">
-  <title>Calendar Notifications</title>
-</head>
-<body>
-  <h1>Calendar Notifications</h1>
-  <button onclick="pingBackend()">Ping Server</button>
-  <div id="output"></div>
+  <head>
+    <meta charset="utf-8" />
+    <title>Timely Notify – Calendar</title>
+    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.9/index.global.min.css" rel="stylesheet" />
+    <style>
+      body {
+        /* transform: rotate(90deg); */
 
-  <script src="main.js"></script>
-</body>
+        font-family: Arial, sans-serif;
+        margin: 20px;
+      }
+      .fc-header-toolbar {
+        display: none;
+      }
+      #calendar {
+        max-width: 900px;
+        margin: 0 auto;
+      }
+      #important-events {
+        max-width: 900px;
+        margin: 40px auto;
+        border-top: 1px solid #ccc;
+        padding-top: 20px;
+      }
+      .important-event {
+        margin-bottom: 10px;
+        font-weight: bold;
+        color: #b30000;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="calendar"></div>
+
+    <div id="important-events">
+      <h3>Important Events</h3>
+      <div id="important-list"></div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.9/index.global.min.js"></script>
+    <script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const calendarEl = document.getElementById("calendar");
+    const importantEl = document.getElementById("important-list");
+    let calendar;
+
+    async function loadEvents() {
+      const res = await fetch("http://localhost:8000/events");
+      const data = await res.json();
+
+      const events = data.regular.map((event) => ({
+        title: event.summary || "(No Title)",
+        start: event.start?.dateTime || event.start?.date,
+        end: event.end?.dateTime || event.end?.date,
+      }));
+
+      // Calculate 4-week range: 1 week before today, 2 weeks after
+      const today = new Date();
+      const start = new Date(today);
+      start.setDate(start.getDate() - start.getDay() - 7); // Previous Sunday
+      const end = new Date(start);
+      end.setDate(start.getDate() + 28); // 4 full weeks
+
+      if (calendar) {
+        calendar.removeAllEvents();
+        calendar.addEventSource(events);
+      } else {
+        calendar = new FullCalendar.Calendar(calendarEl, {
+          initialView: 'dayGridMonth', // Required for visibleRange to work correctly
+          visibleRange: {
+            start: start.toISOString().split("T")[0],
+            end: end.toISOString().split("T")[0],
+          },
+          firstDay: 0, // Sunday
+          headerToolbar: {
+            left: "prev,next today",
+            center: "title",
+            right: "dayGridMonth,timeGridWeek,timeGridDay",
+          },
+          events: events,
+          height: "auto",
+          fixedWeekCount: false,
+        });
+
+        calendar.render();
+      }
+
+      // Update important events
+      importantEl.innerHTML = "";
+      data.important.forEach((event) => {
+        const div = document.createElement("div");
+        const date = event.start?.dateTime || event.start?.date || "";
+        div.className = "important-event";
+        div.textContent = `${event.summary} – ${new Date(date).toLocaleString()}`;
+        importantEl.appendChild(div);
+      });
+    }
+
+    loadEvents(); // Initial load
+    setInterval(loadEvents, 10000); // Refresh every 10 seconds
+  });
+</script>
+  </body>
 </html>
