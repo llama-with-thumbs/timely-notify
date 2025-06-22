@@ -37,7 +37,7 @@ def refresh_access_token():
             "client_id": GOOGLE_CLIENT_ID,
             "client_secret": GOOGLE_CLIENT_SECRET,
             "refresh_token": refresh_token,
-            "grant_type": "refresh_token",
+            "grant_type": "refresh_token"
         }
     )
 
@@ -71,8 +71,6 @@ def login():
             f"scope=https://www.googleapis.com/auth/calendar.readonly&"
             f"access_type=offline&"
             f"prompt=consent"
-            f"prompt=select_account&"
-            f"login_hint=brambleberry.field.reports@gmail.com"
     )
 
 @app.get("/oauth2callback")
