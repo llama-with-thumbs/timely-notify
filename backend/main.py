@@ -16,27 +16,23 @@ phrases = os.getenv("IMPORTANT_PHRASES", "").split(",")
 IMPORTANT_PHRASES = [p.strip().lower() for p in phrases if p.strip()]
 
 user_access_token = None
+refresh_token_memory = None
 
 def refresh_access_token():
-    global user_access_token
-    try:
-        with open("refresh_token.txt", "r") as f:
-            refresh_token = f.read().strip()
-    except FileNotFoundError:
-        print("[WARN] Refresh token file not found.")
-        return False
-    print("[TRACE] Attempting to refresh access token...")
+    global user_access_token, refresh_token_memory
 
-    if not refresh_token:
-        print("[WARN] No refresh token found in environment.")
+    if not refresh_token_memory:
+        print("[WARN] No refresh token found in memory.")
         return False
+
+    print("[TRACE] Attempting to refresh access token...")
 
     res = requests.post(
         "https://oauth2.googleapis.com/token",
         data={
             "client_id": GOOGLE_CLIENT_ID,
             "client_secret": GOOGLE_CLIENT_SECRET,
-            "refresh_token": refresh_token,
+            "refresh_token": refresh_token_memory,
             "grant_type": "refresh_token"
         }
     )
@@ -75,7 +71,7 @@ def login():
 
 @app.get("/oauth2callback")
 def oauth2callback(request: Request):
-    global user_access_token
+    global user_access_token, refresh_token_memory
 
     print("[TRACE] Received code from Google.")
     code = request.query_params.get("code")
@@ -92,18 +88,15 @@ def oauth2callback(request: Request):
 
     token_json = token_res.json()
     user_access_token = token_json.get("access_token")
-    refresh_token = token_json.get("refresh_token")
+    refresh_token_memory = token_json.get("refresh_token")
 
     print("[INFO] New access token obtained.")
-    if refresh_token:
-        try:
-            with open("refresh_token.txt", "w") as f:
-                f.write(refresh_token)
-            print("[INFO] Refresh token saved to file.")
-        except Exception as e:
-            print(f"[ERROR] Failed to save refresh token: {e}")
+    if refresh_token_memory:
+        print("[INFO] Refresh token stored in memory.")
     else:
         print("[WARN] No refresh token received from Google.")
+    
+    return {"status": "Logged in"}
 
 @app.get("/events")
 def get_combined_events():
