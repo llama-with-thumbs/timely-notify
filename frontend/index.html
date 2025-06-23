@@ -47,7 +47,7 @@
     let calendar;
 
     async function loadEvents() {
-      const res = await fetch("http://localhost:8000/events");
+      const res = await fetch("https://timely-notify.onrender.com/events");
       const data = await res.json();
 
       const events = data.regular.map((event) => ({
