@@ -103,17 +103,18 @@ def get_combined_events():
     global user_access_token
 
     print("[TRACE] /events endpoint called.")
+
+    # Try to ensure we have a valid token
     if not user_access_token:
         print("[WARN] No access token found. Attempting to refresh...")
-        success = refresh_access_token()
-        if not success:
+        if not refresh_access_token():
             return {"error": "No valid token. Please log in."}
 
+    # Time range: from the 1st of the current month to the 1st of the next month
     now = datetime.utcnow().replace(tzinfo=timezone.utc)
     start = now.replace(day=1)
     end = (start + timedelta(days=32)).replace(day=1)
-
-    iso_start = start.isoformat()  # already includes +00:00
+    iso_start = start.isoformat()
     iso_end = end.isoformat()
 
     calendar_ids = [
@@ -123,9 +124,8 @@ def get_combined_events():
 
     all_events = []
 
-    for cal_id in calendar_ids:
-        print(f"[TRACE] Fetching events from calendar: {cal_id}")
-        res = requests.get(
+    def fetch_calendar_events(cal_id):
+        return requests.get(
             f"https://www.googleapis.com/calendar/v3/calendars/{cal_id}/events",
             headers={"Authorization": f"Bearer {user_access_token}"},
             params={
@@ -136,31 +136,42 @@ def get_combined_events():
                 "maxResults": 2500
             }
         )
-        if res.status_code == 401:
-            print(f"[ERROR] Unauthorized access to {cal_id}. Token might have expired.")
-        if res.status_code == 200:
-            print(f"[INFO] Events fetched successfully from {cal_id}")
-            all_events.extend(res.json().get("items", []))
+
+    for cal_id in calendar_ids:
+        print(f"[TRACE] Fetching events from {cal_id}")
+        response = fetch_calendar_events(cal_id)
+
+        if response.status_code == 401:
+            print(f"[WARN] Access token may be expired. Attempting to refresh...")
+            if refresh_access_token():
+                response = fetch_calendar_events(cal_id)
+            else:
+                return {"error": "Token expired and refresh failed. Please log in again."}
+
+        if response.status_code == 200:
+            print(f"[INFO] Successfully fetched events from {cal_id}")
+            all_events.extend(response.json().get("items", []))
         else:
-            print(f"[ERROR] Failed to fetch events from {cal_id}: {res.status_code} {res.text}")
-    
+            print(f"[ERROR] Failed to fetch from {cal_id}: {response.status_code} {response.text}")
+
     important_events = []
     regular_events = []
-    today_date = datetime.utcnow().date()
+    today = datetime.utcnow().date()
 
     for event in all_events:
         title = event.get("summary", "").lower()
         start = event.get("start", {}).get("dateTime") or event.get("start", {}).get("date")
-        event_datetime = datetime.fromisoformat(start)
-        event_date_only = event_datetime.date()
-        
-        if any(phrase in title for phrase in IMPORTANT_PHRASES) and event_date_only >= today_date:
+        try:
+            event_date = datetime.fromisoformat(start).date()
+        except Exception:
+            continue  # Skip if start time is invalid
+
+        if any(phrase in title for phrase in IMPORTANT_PHRASES) and event_date >= today:
             important_events.append(event)
-        
+
         regular_events.append(event)
 
-
     return {
-    "important": important_events,
-    "regular": regular_events
+        "important": important_events,
+        "regular": regular_events
     }
