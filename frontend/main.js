@@ -3,62 +3,61 @@ document.addEventListener("DOMContentLoaded", function () {
   const importantEl = document.getElementById("important-list");
   let calendar;
 
+  const isLocal = ["localhost", "127.0.0.1", "[::1]"].includes(window.location.hostname);
+  const backendUrl = isLocal ? "http://localhost:8000/events" : "https://timely-notify.onrender.com/events";
+
   async function loadEvents() {
-    try {
-      const res = await fetch("https://timely-notify.onrender.com/events");
-      const data = await res.json();
+    const res = await fetch(backendUrl);
+    const data = await res.json();
 
-      const events = data.regular.map((event) => ({
-        title: event.summary || "(No Title)",
-        start: event.start?.dateTime || event.start?.date,
-        end: event.end?.dateTime || event.end?.date,
-      }));
+    const events = data.regular.map((event) => ({
+      title: event.summary || "(No Title)",
+      start: event.start?.dateTime || event.start?.date,
+      end: event.end?.dateTime || event.end?.date,
+    }));
 
-      if (calendar) {
-        calendar.removeAllEvents();
-        calendar.addEventSource(events);
-      } else {
-        const today = new Date();
-        const start = new Date(today);
-        start.setDate(today.getDate() - 7);
-        const end = new Date(today);
-        end.setDate(today.getDate() + 21);
+    // Calculate 4-week range: 1 week before today, 2 weeks after
+    const today = new Date();
+    const start = new Date(today);
+    start.setDate(start.getDate() - start.getDay() - 7); // Previous Sunday
+    const end = new Date(start);
+    end.setDate(start.getDate() + 28); // 4 full weeks
 
-        calendar = new FullCalendar.Calendar(calendarEl, {
-          initialView: 'dayGridMonth',
-          visibleRange: {
-            start: start.toISOString().split('T')[0],
-            end: end.toISOString().split('T')[0]
-          },
-          firstDay: 0, // Sunday
-          headerToolbar: {
-            left: "prev,next today",
-            center: "title",
-            right: "dayGridMonth,timeGridWeek,timeGridDay",
-          },
-          events: events,
-          height: 'auto',
-          fixedWeekCount: false,
-        });
-
-        calendar.render();
-      }
-
-      // Display important events
-      importantEl.innerHTML = "";
-      data.important.forEach((event) => {
-        const div = document.createElement("div");
-        const date = event.start?.dateTime || event.start?.date || "";
-        div.className = "important-event";
-        div.textContent = `${event.summary} – ${new Date(date).toLocaleString()}`;
-        importantEl.appendChild(div);
+    if (calendar) {
+      calendar.removeAllEvents();
+      calendar.addEventSource(events);
+    } else {
+      calendar = new FullCalendar.Calendar(calendarEl, {
+        initialView: "dayGridMonth", // Required for visibleRange to work correctly
+        visibleRange: {
+          start: start.toISOString().split("T")[0],
+          end: end.toISOString().split("T")[0],
+        },
+        firstDay: 0, // Sunday
+        headerToolbar: {
+          left: "",
+          center: "title",
+          right: "",
+        },
+        events: events,
+        height: "auto",
+        fixedWeekCount: false,
       });
 
-    } catch (error) {
-      console.error("Failed to load events:", error);
+      calendar.render();
     }
+
+    // Update important events
+    importantEl.innerHTML = "";
+    data.important.forEach((event) => {
+      const div = document.createElement("div");
+      const date = event.start?.dateTime || event.start?.date || "";
+      div.className = "important-event";
+      div.textContent = `${event.summary} – ${new Date(date).toLocaleString()}`;
+      importantEl.appendChild(div);
+    });
   }
 
-  loadEvents();
+  loadEvents(); // Initial load
   setInterval(loadEvents, 10000); // Refresh every 10 seconds
 });

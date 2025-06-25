@@ -11,9 +11,13 @@ load_dotenv()
 
 GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID")
 GOOGLE_CLIENT_SECRET = os.getenv("GOOGLE_CLIENT_SECRET")
-REDIRECT_URI = os.getenv("REDIRECT_URI")
 phrases = os.getenv("IMPORTANT_PHRASES", "").split(",")
 IMPORTANT_PHRASES = [p.strip().lower() for p in phrases if p.strip()]
+ENVIRONMENT = os.getenv("ENVIRONMENT", "local")
+if ENVIRONMENT == "local":
+    REDIRECT_URI = "http://localhost:8000/oauth2callback"
+else:
+    REDIRECT_URI = "https://your-backend.onrender.com/oauth2callback"
 
 user_access_token = None
 refresh_token_memory = None
