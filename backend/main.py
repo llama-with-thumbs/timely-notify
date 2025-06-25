@@ -17,7 +17,7 @@ ENVIRONMENT = os.getenv("ENVIRONMENT", "local")
 if ENVIRONMENT == "local":
     REDIRECT_URI = "http://localhost:8000/oauth2callback"
 else:
-    REDIRECT_URI = "https://your-backend.onrender.com/oauth2callback"
+    REDIRECT_URI = "https://timely-notify.onrender.com/oauth2callback"
 
 user_access_token = None
 refresh_token_memory = None
