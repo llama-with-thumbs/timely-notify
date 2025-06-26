@@ -17,8 +17,11 @@ A one-page website that connects to Google Calendar and shows event notification
 
 From the `backend/` folder:
 
-```bash
+### bash
 uvicorn main:app --reload
+## or
+python -m uvicorn main:app --reload
+
 
 ## Frontend
 

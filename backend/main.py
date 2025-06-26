@@ -37,7 +37,8 @@ def refresh_access_token():
             "client_id": GOOGLE_CLIENT_ID,
             "client_secret": GOOGLE_CLIENT_SECRET,
             "refresh_token": refresh_token_memory,
-            "grant_type": "refresh_token"
+            "grant_type": "refresh_token",
+            "prompt": "consent"
         }
     )
 
@@ -107,7 +108,7 @@ def get_combined_events():
     global user_access_token
 
     print("[TRACE] /events endpoint called.")
-
+    print("[DEBUG] token_data:", refresh_token_memory)
     # Try to ensure we have a valid token
     if not user_access_token:
         print("[WARN] No access token found. Attempting to refresh...")
