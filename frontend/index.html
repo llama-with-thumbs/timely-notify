@@ -6,8 +6,6 @@
     <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.9/index.global.min.css" rel="stylesheet" />
     <style>
       body {
-        /* transform: rotate(90deg); */
-
         font-family: Arial, sans-serif;
         margin: 20px;
       }
@@ -40,5 +38,11 @@
     </div>
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.9/index.global.min.js"></script>
     <script src="./main.js"></script>
+    <script>
+      const isLocal = window.location.hostname === "localhost" || window.location.hostname === "[::1]";
+      if (!isLocal) {
+        document.body.style.transform = "rotate(90deg)";
+      }
+    </script>
   </body>
 </html>
