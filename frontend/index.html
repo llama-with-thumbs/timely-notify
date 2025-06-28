@@ -14,16 +14,6 @@
         width: 100%;
       }
 
-      body.rotated {
-        transform: rotate(-90deg);
-        transform-origin: left top;
-        position: absolute;
-        top: 100%;
-        left: 0;
-        width: 100vh;
-        height: 100vw;
-        overflow: hidden;
-      }
 
       #calendar,
       #important-events {
@@ -60,11 +50,6 @@
 
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.9/index.global.min.js"></script>
     <script src="./main.js"></script>
-    <script>
-      const isRender = !["localhost", "127.0.0.1", "::1"].includes(window.location.hostname);
-      if (isRender) {
-        document.body.classList.add("rotated");
-      }
-    </script>
+
   </body>
 </html>
