@@ -117,8 +117,13 @@ def get_combined_events():
 
     # Time range: from the 1st of the current month to the 1st of the next month
     now = datetime.utcnow().replace(tzinfo=timezone.utc)
-    start = now.replace(day=1)
-    end = (start + timedelta(days=32)).replace(day=1)
+    # 3 weeks before now
+    start = now - timedelta(weeks=3)
+
+    # 3 weeks after now
+    end = now + timedelta(weeks=3)
+
+    # Convert to ISO format
     iso_start = start.isoformat()
     iso_end = end.isoformat()
 
