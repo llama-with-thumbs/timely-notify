@@ -40,7 +40,7 @@ document.addEventListener("DOMContentLoaded", function () {
           right: "",
         },
         events: events,
-        height: "auto",
+        height: "80vh",
         fixedWeekCount: false,
       });
 
