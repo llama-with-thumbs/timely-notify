@@ -1,17 +1,66 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Timely Notify – Calendar</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
     <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.9/index.global.min.css" rel="stylesheet" />
     <style>
+      :root {
+        --bg: #ffffff;
+        --surface: #f8fafc;
+        --text: #334155;
+        --text-muted: #64748b;
+        --border: #e2e8f0;
+        --accent: #2563eb;
+        --important: #dc2626;
+      }
+
+      [data-theme="dark"] {
+        --bg: #0f172a;
+        --surface: #1e293b;
+        --text: #f1f5f9;
+        --text-muted: #94a3b8;
+        --border: #334155;
+        --accent: #60a5fa;
+        --important: #f87171;
+      }
+
       html,
       body {
         margin: 0;
         padding: 0;
-        background-color: #f8f5e9;
-        font-size: 18px;
-        font-family: Petit Formal Script, sans-serif;
+        background-color: var(--bg);
+        color: var(--text);
+        font-size: 16px;
+        font-family: "Inter", sans-serif;
+        transition: background-color 0.2s, color 0.2s;
+      }
+
+      #theme-toggle {
+        position: fixed;
+        top: 12px;
+        right: 16px;
+        z-index: 1000;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        color: var(--text);
+        font-size: 20px;
+        width: 40px;
+        height: 40px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background-color 0.2s, border-color 0.2s;
+      }
+
+      #theme-toggle:hover {
+        background: var(--border);
       }
 
       #calendar,
@@ -22,24 +71,55 @@
         box-sizing: border-box;
       }
 
+      /* FullCalendar overrides */
+      .fc {
+        --fc-border-color: var(--border);
+        --fc-page-bg-color: var(--bg);
+        --fc-neutral-bg-color: var(--surface);
+        --fc-today-bg-color: color-mix(in srgb, var(--accent) 8%, transparent);
+        --fc-event-bg-color: var(--accent);
+        --fc-event-border-color: var(--accent);
+        --fc-event-text-color: #ffffff;
+      }
+
+      .fc .fc-col-header-cell-cushion,
+      .fc .fc-daygrid-day-number {
+        color: var(--text);
+      }
+
+      .fc .fc-col-header-cell {
+        background: var(--surface);
+      }
+
+      .fc .fc-daygrid-day {
+        background: var(--bg);
+      }
+
       .fc-header-toolbar {
         display: none;
       }
 
       #important-events {
-        border-top: 1px solid #ccc;
-        padding: 20px;
+        border-top: 1px solid var(--border);
+        padding: 20px 40px;
         text-align: center;
+      }
+
+      #important-events h3 {
+        color: var(--text);
+        font-weight: 600;
+        margin-bottom: 12px;
       }
 
       .important-event {
         margin-bottom: 10px;
-        font-weight: bold;
-        color: #b30000;
+        font-weight: 600;
+        color: var(--important);
       }
     </style>
   </head>
   <body>
+    <button id="theme-toggle" aria-label="Toggle theme">&#9790;</button>
     <div class="container">
       <div id="calendar"></div>
       <div id="important-events">

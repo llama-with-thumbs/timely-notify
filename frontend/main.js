@@ -1,3 +1,22 @@
+// Theme toggle
+(function () {
+  const toggle = document.getElementById("theme-toggle");
+  const saved = localStorage.getItem("theme");
+  const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+  const theme = saved || (prefersDark ? "dark" : "light");
+
+  document.documentElement.setAttribute("data-theme", theme);
+  toggle.textContent = theme === "dark" ? "\u2600" : "\u263E";
+
+  toggle.addEventListener("click", function () {
+    const current = document.documentElement.getAttribute("data-theme");
+    const next = current === "dark" ? "light" : "dark";
+    document.documentElement.setAttribute("data-theme", next);
+    toggle.textContent = next === "dark" ? "\u2600" : "\u263E";
+    localStorage.setItem("theme", next);
+  });
+})();
+
 document.addEventListener("DOMContentLoaded", function () {
   const calendarEl = document.getElementById("calendar");
   const importantEl = document.getElementById("important-list");
