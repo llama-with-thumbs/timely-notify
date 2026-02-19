@@ -63,11 +63,22 @@
         background: var(--border);
       }
 
-      #calendar,
+      .container {
+        display: flex;
+        min-height: calc(100vh - 48px);
+      }
+
+      #calendar {
+        flex: 1;
+        padding: 24px;
+        box-sizing: border-box;
+        min-width: 0;
+      }
+
       #important-events {
-        max-width: none;
-        width: 100%;
-        padding: 40px;
+        width: 280px;
+        flex-shrink: 0;
+        padding: 24px;
         box-sizing: border-box;
       }
 
@@ -100,9 +111,8 @@
       }
 
       #important-events {
-        border-top: 1px solid var(--border);
-        padding: 20px 40px;
-        text-align: center;
+        border-left: 1px solid var(--border);
+        text-align: left;
       }
 
       #important-events h3 {
@@ -116,6 +126,23 @@
         font-weight: 600;
         color: var(--important);
       }
+
+      footer {
+        border-top: 1px solid var(--border);
+        padding: 12px 24px;
+        text-align: center;
+        font-size: 13px;
+        color: var(--text-muted);
+      }
+
+      footer a {
+        color: var(--accent);
+        text-decoration: none;
+      }
+
+      footer a:hover {
+        text-decoration: underline;
+      }
     </style>
   </head>
   <body>
@@ -127,6 +154,9 @@
         <div id="important-list"></div>
       </div>
     </div>
+    <footer>
+      <a href="https://github.com/llama-with-thumbs/timely-notify#readme" target="_blank">timely-notify</a> — View on GitHub
+    </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.9/index.global.min.js"></script>
     <script src="./main.js"></script>
