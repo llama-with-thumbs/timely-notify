@@ -1,6 +1,38 @@
+declare namespace FullCalendar {
+  class Calendar {
+    constructor(el: HTMLElement, options: Record<string, unknown>);
+    render(): void;
+    removeAllEvents(): void;
+    addEventSource(events: CalendarEvent[]): void;
+  }
+}
+
+interface CalendarEvent {
+  title: string;
+  start: string | undefined;
+  end: string | undefined;
+}
+
+interface GoogleDateTime {
+  dateTime?: string;
+  date?: string;
+}
+
+interface GoogleEvent {
+  summary?: string;
+  start?: GoogleDateTime;
+  end?: GoogleDateTime;
+}
+
+interface EventsResponse {
+  error?: string;
+  regular: GoogleEvent[];
+  important: GoogleEvent[];
+}
+
 // Theme toggle
-(function () {
-  const toggle = document.getElementById("theme-toggle");
+(function (): void {
+  const toggle = document.getElementById("theme-toggle") as HTMLButtonElement;
   const saved = localStorage.getItem("theme");
   const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
   const theme = saved || (prefersDark ? "dark" : "light");
@@ -8,7 +40,7 @@
   document.documentElement.setAttribute("data-theme", theme);
   toggle.textContent = theme === "dark" ? "\u2600" : "\u263E";
 
-  toggle.addEventListener("click", function () {
+  toggle.addEventListener("click", function (): void {
     const current = document.documentElement.getAttribute("data-theme");
     const next = current === "dark" ? "light" : "dark";
     document.documentElement.setAttribute("data-theme", next);
@@ -17,23 +49,23 @@
   });
 })();
 
-document.addEventListener("DOMContentLoaded", function () {
-  const calendarEl = document.getElementById("calendar");
-  const importantEl = document.getElementById("important-list");
-  let calendar;
+document.addEventListener("DOMContentLoaded", function (): void {
+  const calendarEl = document.getElementById("calendar") as HTMLElement;
+  const importantEl = document.getElementById("important-list") as HTMLElement;
+  let calendar: FullCalendar.Calendar | null = null;
 
   const backendUrl = "/events";
 
-  async function loadEvents() {
+  async function loadEvents(): Promise<void> {
     const res = await fetch(backendUrl);
-    const data = await res.json();
+    const data: EventsResponse = await res.json();
 
     if (data.error) {
       window.location.href = "/login";
       return;
     }
 
-    const events = data.regular.map((event) => ({
+    const events: CalendarEvent[] = data.regular.map((event: GoogleEvent) => ({
       title: event.summary || "(No Title)",
       start: event.start?.dateTime || event.start?.date,
       end: event.end?.dateTime || event.end?.date,
@@ -72,7 +104,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Update important events
     importantEl.innerHTML = "";
-    data.important.forEach((event) => {
+    data.important.forEach((event: GoogleEvent) => {
       const div = document.createElement("div");
       const date = event.start?.dateTime || event.start?.date || "";
       div.className = "important-event";
