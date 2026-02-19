@@ -1,13 +1,19 @@
 from fastapi import FastAPI, Request
-from fastapi.responses import RedirectResponse
+from fastapi.responses import RedirectResponse, FileResponse
+from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
 from datetime import datetime, timedelta, timezone
+from pathlib import Path
 import os
 import requests
 
 # Load environment variables
 load_dotenv()
+
+# Resolve frontend directory relative to this file's location
+BACKEND_DIR = Path(__file__).resolve().parent
+FRONTEND_DIR = BACKEND_DIR.parent / "frontend"
 
 GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID")
 GOOGLE_CLIENT_SECRET = os.getenv("GOOGLE_CLIENT_SECRET")
@@ -60,6 +66,10 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+@app.get("/")
+def serve_root():
+    return FileResponse(FRONTEND_DIR / "index.html")
 
 @app.get("/login")
 def login():
@@ -185,3 +195,6 @@ def get_combined_events():
         "important": important_events,
         "regular": regular_events
     }
+
+# Mount frontend static files LAST so API routes take priority
+app.mount("/", StaticFiles(directory=FRONTEND_DIR), name="frontend")

@@ -3,8 +3,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const importantEl = document.getElementById("important-list");
   let calendar;
 
-  const isLocal = ["localhost", "127.0.0.1", "[::1]"].includes(window.location.hostname);
-  const backendUrl = isLocal ? "http://localhost:8000/events" : "https://timely-notify.onrender.com/events";
+  const backendUrl = "/events";
 
   async function loadEvents() {
     const res = await fetch(backendUrl);

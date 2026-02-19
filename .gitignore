@@ -1,3 +1,8 @@
 # Prevent committing secrets
 refresh_token.txt
 .env
+
+# Python
+__pycache__/
+*.pyc
+.venv/
