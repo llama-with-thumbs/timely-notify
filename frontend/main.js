@@ -51,7 +51,7 @@ document.addEventListener("DOMContentLoaded", function () {
       calendar.addEventSource(events);
     } else {
       calendar = new FullCalendar.Calendar(calendarEl, {
-        initialView: "dayGridMonth", // Required for visibleRange to work correctly
+        initialView: "dayGrid",
         visibleRange: {
           start: start.toISOString().split("T")[0],
           end: end.toISOString().split("T")[0],
