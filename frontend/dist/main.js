@@ -1,18 +1,50 @@
 "use strict";
 // Theme toggle
 (function () {
-    const toggle = document.getElementById("theme-toggle");
+    const checkbox = document.getElementById("theme-checkbox");
     const saved = localStorage.getItem("theme");
     const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
     const theme = saved || (prefersDark ? "dark" : "light");
     document.documentElement.setAttribute("data-theme", theme);
-    toggle.textContent = theme === "dark" ? "\u2600" : "\u263E";
-    toggle.addEventListener("click", function () {
-        const current = document.documentElement.getAttribute("data-theme");
-        const next = current === "dark" ? "light" : "dark";
+    checkbox.checked = theme === "dark";
+    checkbox.addEventListener("change", function () {
+        const next = checkbox.checked ? "dark" : "light";
         document.documentElement.setAttribute("data-theme", next);
-        toggle.textContent = next === "dark" ? "\u2600" : "\u263E";
         localStorage.setItem("theme", next);
+    });
+})();
+// Draggable resizer
+(function () {
+    const resizer = document.getElementById("resizer");
+    const sidebar = document.getElementById("important-events");
+    const savedWidth = localStorage.getItem("sidebarWidth");
+    if (savedWidth) {
+        sidebar.style.width = savedWidth + "px";
+    }
+    let startX = 0;
+    let startWidth = 0;
+    function onMouseMove(e) {
+        const delta = startX - e.clientX;
+        const newWidth = Math.max(150, Math.min(600, startWidth + delta));
+        sidebar.style.width = newWidth + "px";
+    }
+    function onMouseUp() {
+        resizer.classList.remove("dragging");
+        document.body.style.cursor = "";
+        document.body.style.userSelect = "";
+        localStorage.setItem("sidebarWidth", String(sidebar.offsetWidth));
+        document.removeEventListener("mousemove", onMouseMove);
+        document.removeEventListener("mouseup", onMouseUp);
+    }
+    resizer.addEventListener("mousedown", function (e) {
+        e.preventDefault();
+        startX = e.clientX;
+        startWidth = sidebar.offsetWidth;
+        resizer.classList.add("dragging");
+        document.body.style.cursor = "col-resize";
+        document.body.style.userSelect = "none";
+        document.addEventListener("mousemove", onMouseMove);
+        document.addEventListener("mouseup", onMouseUp);
     });
 })();
 document.addEventListener("DOMContentLoaded", function () {

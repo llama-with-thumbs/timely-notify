@@ -32,20 +32,58 @@ interface EventsResponse {
 
 // Theme toggle
 (function (): void {
-  const toggle = document.getElementById("theme-toggle") as HTMLButtonElement;
+  const checkbox = document.getElementById("theme-checkbox") as HTMLInputElement;
   const saved = localStorage.getItem("theme");
   const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
   const theme = saved || (prefersDark ? "dark" : "light");
 
   document.documentElement.setAttribute("data-theme", theme);
-  toggle.textContent = theme === "dark" ? "\u2600" : "\u263E";
+  checkbox.checked = theme === "dark";
 
-  toggle.addEventListener("click", function (): void {
-    const current = document.documentElement.getAttribute("data-theme");
-    const next = current === "dark" ? "light" : "dark";
+  checkbox.addEventListener("change", function (): void {
+    const next = checkbox.checked ? "dark" : "light";
     document.documentElement.setAttribute("data-theme", next);
-    toggle.textContent = next === "dark" ? "\u2600" : "\u263E";
     localStorage.setItem("theme", next);
+  });
+})();
+
+// Draggable resizer
+(function (): void {
+  const resizer = document.getElementById("resizer") as HTMLElement;
+  const sidebar = document.getElementById("important-events") as HTMLElement;
+
+  const savedWidth = localStorage.getItem("sidebarWidth");
+  if (savedWidth) {
+    sidebar.style.width = savedWidth + "px";
+  }
+
+  let startX = 0;
+  let startWidth = 0;
+
+  function onMouseMove(e: MouseEvent): void {
+    const delta = startX - e.clientX;
+    const newWidth = Math.max(150, Math.min(600, startWidth + delta));
+    sidebar.style.width = newWidth + "px";
+  }
+
+  function onMouseUp(): void {
+    resizer.classList.remove("dragging");
+    document.body.style.cursor = "";
+    document.body.style.userSelect = "";
+    localStorage.setItem("sidebarWidth", String(sidebar.offsetWidth));
+    document.removeEventListener("mousemove", onMouseMove);
+    document.removeEventListener("mouseup", onMouseUp);
+  }
+
+  resizer.addEventListener("mousedown", function (e: MouseEvent): void {
+    e.preventDefault();
+    startX = e.clientX;
+    startWidth = sidebar.offsetWidth;
+    resizer.classList.add("dragging");
+    document.body.style.cursor = "col-resize";
+    document.body.style.userSelect = "none";
+    document.addEventListener("mousemove", onMouseMove);
+    document.addEventListener("mouseup", onMouseUp);
   });
 })();
 

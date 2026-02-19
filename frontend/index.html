@@ -50,27 +50,74 @@
         flex-direction: column;
       }
 
+      /* Theme toggle switch */
       #theme-toggle {
         position: fixed;
         top: 12px;
         right: 16px;
         z-index: 1000;
-        background: var(--surface);
-        border: 1px solid var(--border);
-        border-radius: 8px;
-        color: var(--text);
-        font-size: 20px;
-        width: 40px;
-        height: 40px;
         cursor: pointer;
         display: flex;
         align-items: center;
-        justify-content: center;
-        transition: background-color 0.2s, border-color 0.2s;
       }
 
-      #theme-toggle:hover {
+      #theme-checkbox {
+        display: none;
+      }
+
+      .toggle-track {
+        display: block;
+        width: 48px;
+        height: 26px;
         background: var(--border);
+        border-radius: 13px;
+        position: relative;
+        transition: background-color 0.2s;
+      }
+
+      .toggle-thumb {
+        position: absolute;
+        top: 3px;
+        left: 3px;
+        width: 20px;
+        height: 20px;
+        background: var(--bg);
+        border-radius: 50%;
+        transition: transform 0.2s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+      }
+
+      .toggle-thumb::after {
+        content: "\2600";
+      }
+
+      #theme-checkbox:checked + .toggle-track {
+        background: var(--accent);
+      }
+
+      #theme-checkbox:checked + .toggle-track .toggle-thumb {
+        transform: translateX(22px);
+      }
+
+      #theme-checkbox:checked + .toggle-track .toggle-thumb::after {
+        content: "\263E";
+      }
+
+      /* Draggable resizer */
+      #resizer {
+        width: 6px;
+        cursor: col-resize;
+        background: var(--border);
+        flex-shrink: 0;
+        transition: background-color 0.15s;
+      }
+
+      #resizer:hover,
+      #resizer.dragging {
+        background: var(--accent);
       }
 
       .container {
@@ -136,6 +183,14 @@
         border: 2px solid var(--important);
       }
 
+      .fc .fc-day-today .fc-daygrid-day-top::after {
+        content: "Today";
+        font-size: 11px;
+        font-weight: 600;
+        color: var(--important);
+        margin-left: 4px;
+      }
+
       .fc-header-toolbar {
         display: none;
       }
@@ -194,16 +249,26 @@
           border-left: none;
           border-top: 1px solid var(--border);
         }
+
+        #resizer {
+          display: none;
+        }
       }
     </style>
   </head>
   <body>
-    <button id="theme-toggle" aria-label="Toggle theme">&#9790;</button>
+    <label id="theme-toggle" aria-label="Toggle theme">
+      <input type="checkbox" id="theme-checkbox" />
+      <span class="toggle-track">
+        <span class="toggle-thumb"></span>
+      </span>
+    </label>
     <div class="container">
       <div class="calendar-section">
         <h2>Calendar</h2>
         <div id="calendar"></div>
       </div>
+      <div id="resizer"></div>
       <div id="important-events">
         <h3>Important Events</h3>
         <div id="important-list"></div>
