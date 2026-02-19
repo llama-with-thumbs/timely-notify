@@ -39,10 +39,10 @@ document.addEventListener("DOMContentLoaded", function () {
       end: event.end?.dateTime || event.end?.date,
     }));
 
-    // Calculate 4-week range: 1 week before today, 2 weeks after
+    // 4-week range starting from Sunday of the current week
     const today = new Date();
     const start = new Date(today);
-    start.setDate(start.getDate() - start.getDay() - 7); // Previous Sunday
+    start.setDate(start.getDate() - start.getDay()); // Sunday of current week
     const end = new Date(start);
     end.setDate(start.getDate() + 28); // 4 full weeks
 

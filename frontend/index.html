@@ -76,11 +76,25 @@
         overflow: hidden;
       }
 
-      #calendar {
+      .calendar-section {
         flex: 1;
         padding: 24px;
         box-sizing: border-box;
         min-width: 0;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .calendar-section h2 {
+        margin: 0 0 12px 0;
+        font-size: 20px;
+        font-weight: 600;
+        color: var(--text);
+      }
+
+      #calendar {
+        flex: 1;
+        min-height: 0;
       }
 
       #important-events {
@@ -156,12 +170,37 @@
       footer a:hover {
         text-decoration: underline;
       }
+
+      @media (max-width: 768px) {
+        html, body {
+          height: auto;
+          overflow: auto;
+        }
+
+        .container {
+          flex-direction: column;
+          overflow: visible;
+        }
+
+        .calendar-section {
+          min-height: 60vh;
+        }
+
+        #important-events {
+          width: auto;
+          border-left: none;
+          border-top: 1px solid var(--border);
+        }
+      }
     </style>
   </head>
   <body>
     <button id="theme-toggle" aria-label="Toggle theme">&#9790;</button>
     <div class="container">
-      <div id="calendar"></div>
+      <div class="calendar-section">
+        <h2>Calendar</h2>
+        <div id="calendar"></div>
+      </div>
       <div id="important-events">
         <h3>Important Events</h3>
         <div id="important-list"></div>
