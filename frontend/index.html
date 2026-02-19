@@ -33,11 +33,18 @@
       body {
         margin: 0;
         padding: 0;
+        height: 100vh;
+        overflow: hidden;
         background-color: var(--bg);
         color: var(--text);
         font-size: 16px;
         font-family: "Inter", sans-serif;
         transition: background-color 0.2s, color 0.2s;
+      }
+
+      body {
+        display: flex;
+        flex-direction: column;
       }
 
       #theme-toggle {
@@ -65,7 +72,8 @@
 
       .container {
         display: flex;
-        min-height: calc(100vh - 48px);
+        flex: 1;
+        overflow: hidden;
       }
 
       #calendar {
@@ -80,6 +88,7 @@
         flex-shrink: 0;
         padding: 24px;
         box-sizing: border-box;
+        overflow-y: auto;
       }
 
       /* FullCalendar overrides */

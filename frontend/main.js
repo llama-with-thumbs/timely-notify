@@ -63,7 +63,7 @@ document.addEventListener("DOMContentLoaded", function () {
           right: "",
         },
         events: events,
-        height: "80vh",
+        height: "100%",
         fixedWeekCount: false,
       });
 
