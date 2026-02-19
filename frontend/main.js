@@ -28,6 +28,11 @@ document.addEventListener("DOMContentLoaded", function () {
     const res = await fetch(backendUrl);
     const data = await res.json();
 
+    if (data.error) {
+      window.location.href = "/login";
+      return;
+    }
+
     const events = data.regular.map((event) => ({
       title: event.summary || "(No Title)",
       start: event.start?.dateTime || event.start?.date,
